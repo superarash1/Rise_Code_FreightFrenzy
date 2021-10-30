@@ -162,7 +162,7 @@ public class OpenCVExample extends LinearOpMode{
         Point region4_pointB = new Point(REGION3_TOPLEFT_ANCHOR_POINT.x + REGION3_WIDTH, REGION2_TOPLEFT_ANCHOR_POINT.y + REGION3_HEIGHT);
 
         // Create fields to store the color value information 
-        Mat region1_G, region2_G, region3_G, region4_G
+        Mat region1_G, region2_G, region3_G, region4_G;
             
         // Define objects for color spaces
         Mat HLS = new Mat();
