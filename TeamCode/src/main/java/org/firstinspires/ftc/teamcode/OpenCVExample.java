@@ -153,8 +153,8 @@ public class OpenCVExample extends LinearOpMode{
         int avg1, avg2, avg3, avg4;
 
         /*
-         * This function takes the RGB frame, converts to YCrCb,
-         * and extracts the Cb channel to the 'Cb' variable
+         * This function takes the RGB frame, converts to HLS,
+         * and extracts the L channel to the 'L' variable
          */
         void inputToG(Mat input) {
             Imgproc.cvtColor(input, HLS, Imgproc.COLOR_RGB2HLS);
