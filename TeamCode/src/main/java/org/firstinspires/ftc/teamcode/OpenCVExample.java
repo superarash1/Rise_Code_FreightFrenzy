@@ -20,7 +20,10 @@ import org.openftc.easyopencv.OpenCvPipeline;
 @Disabled
 public class OpenCVExample extends LinearOpMode{
 
+    // Define Webcam
     OpenCvCamera webcam;
+    
+    // Create pipeline
     static TestPipeline pipeline;
 
     Hardware TIseBot = new Hardware();
@@ -44,11 +47,15 @@ public class OpenCVExample extends LinearOpMode{
         TIseBot.backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         TIseBot.backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        // Set up camera
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        
+        // Set up pipeline
         pipeline = new TestPipeline();
         webcam.setPipeline(pipeline);
 
+        // Start camera streaming
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -70,10 +77,14 @@ public class OpenCVExample extends LinearOpMode{
         waitForStart();
 
         while (opModeIsActive()) {
+            
+            // Telemetry data
             telemetry.addData("Region 1", pipeline.region1Avg());
             telemetry.addData("Region 2", pipeline.region2Avg());
             telemetry.addData("Region 3", pipeline.region3Avg());
+            
 
+            // This compares the light values to determine which region has the highest values to determine the CSE's location
             if ((pipeline.region1Avg() > pipeline.region2Avg()) && (pipeline.region1Avg() > pipeline.region3Avg())){
                 telemetry.addLine("Bottom");
             }
@@ -86,7 +97,7 @@ public class OpenCVExample extends LinearOpMode{
 
             telemetry.update();
 
-            drive = gamepad1.left_stick_y; //Between -1 and 1
+            drive = gamepad1.left_stick_y;
             turn = gamepad1.right_stick_x;
             strafe = gamepad1.dpad_left? -1:gamepad1.dpad_right? 1: gamepad1.left_stick_x;
 
@@ -112,6 +123,7 @@ public class OpenCVExample extends LinearOpMode{
         }
     }
 
+    // The pipeline (which is made in separate class here
     public static class TestPipeline extends OpenCvPipeline {
 
         /** Most important section of the code: Colors **/
@@ -121,6 +133,7 @@ public class OpenCVExample extends LinearOpMode{
         static final Scalar GOLD = new Scalar(255, 215, 0);
         static final Scalar CYAN = new Scalar(0, 139, 139);
 
+        // Define the dimensions and location of each region
         static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(2, 70);
         static final int REGION1_WIDTH = 105;
         static final int REGION1_HEIGHT = 105;
@@ -135,6 +148,7 @@ public class OpenCVExample extends LinearOpMode{
         static final int REGION4_HEIGHT = 105;
 
 
+        // Create the points that will be used to make the rectangles for the region
         Point region1_pointA = new Point(REGION1_TOPLEFT_ANCHOR_POINT.x, REGION1_TOPLEFT_ANCHOR_POINT.y);
         Point region1_pointB = new Point(REGION1_TOPLEFT_ANCHOR_POINT.x + REGION1_WIDTH, REGION1_TOPLEFT_ANCHOR_POINT.y + REGION1_HEIGHT);
 
@@ -147,7 +161,10 @@ public class OpenCVExample extends LinearOpMode{
         Point region4_pointA = new Point(REGION3_TOPLEFT_ANCHOR_POINT.x, REGION3_TOPLEFT_ANCHOR_POINT.y);
         Point region4_pointB = new Point(REGION3_TOPLEFT_ANCHOR_POINT.x + REGION3_WIDTH, REGION2_TOPLEFT_ANCHOR_POINT.y + REGION3_HEIGHT);
 
-        Mat region1_G, region2_G, region3_G, region4_G;
+        // Create fields to store the color value information 
+        Mat region1_G, region2_G, region3_G, region4_G
+            
+        // Define objects for color spaces
         Mat HLS = new Mat();
         Mat L = new Mat();
         int avg1, avg2, avg3, avg4;
@@ -165,6 +182,7 @@ public class OpenCVExample extends LinearOpMode{
         public void init(Mat firstFrame) {
             inputToG(firstFrame);
 
+            // Create regions, find the color values, and update the fields
             region1_G = L.submat(new Rect(region1_pointA, region1_pointB));
             region2_G = L.submat(new Rect(region2_pointA, region2_pointB));
             region3_G = L.submat(new Rect(region3_pointA, region3_pointB));
@@ -176,11 +194,13 @@ public class OpenCVExample extends LinearOpMode{
 
             inputToG(input);
 
+            // Finds the avg color value in a region
             avg1 = (int) Core.mean(region1_G).val[0];
             avg2 = (int) Core.mean(region2_G).val[0];
             avg3 = (int) Core.mean(region3_G).val[0];
             avg4 = (int) Core.mean(region4_G).val[0];
 
+            // Draws a rectangle on the camera stream and is wha tthe color constants are used for
             Imgproc.rectangle(input, region1_pointA, region1_pointB, CRIMSON,2);
             Imgproc.rectangle(input, region2_pointA, region2_pointB, AQUA,2);
             Imgproc.rectangle(input, region3_pointA, region3_pointB, PARAKEET,2);
@@ -189,6 +209,8 @@ public class OpenCVExample extends LinearOpMode{
             return input;
         }
 
+        // Creating methods with the avgs in order to use them more universally 
+        
         public int region1Avg() {
             return avg1;
         }
@@ -201,6 +223,5 @@ public class OpenCVExample extends LinearOpMode{
         public int region4Avg() {
             return avg4;
         }
-
     }
 }
