@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -20,12 +22,11 @@ public class Hardware {
     public DcMotor backLeftMotor;
     public DcMotor middleLeftMotor;
     public DcMotor middleRightMotor;
-    public DcMotor sliderLift;
+    public DcMotor turretSpinner;
+    public DcMotor carouselSpinner;
 
     // Define Servo Variables
-    public CRServo claw;
-    public CRServo joint;
-
+    public Servo turret;
 
     // Define Sensor Variables
     public BNO055IMU imu;
@@ -51,11 +52,12 @@ public class Hardware {
         backLeftMotor = hardwareMap.get(DcMotor.class, "backLeft");
         middleLeftMotor = hardwareMap.get(DcMotor.class, "middleLeft");
         middleRightMotor = hardwareMap.get(DcMotor.class, "middleRight");
-        sliderLift = hardwareMap.get(DcMotor.class, "sliderLift");
+        carouselSpinner = hardwareMap.get(DcMotor.class, "carouselSpinner");
+        turretSpinner = hardwareMap.get(DcMotor.class, "turretSpinner");
+
 
         // Find Servos in phone config
-        claw = hardwareMap.get(CRServo.class,"claw");
-        joint = hardwareMap.get(CRServo.class,"joint");
+        turret = hardwareMap.get(Servo.class,"turret");
 
 
         //Find Sensors in phone config
@@ -69,7 +71,8 @@ public class Hardware {
         frontRightMotor.setPower(0);
         middleLeftMotor.setPower(0);
         middleRightMotor.setPower(0);
-
+        carouselSpinner.setPower(0);
+        turretSpinner.setPower(0);
 
         // IMU Setup
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -96,22 +99,21 @@ public class Hardware {
         middleLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         middleRightMotor.setDirection(DcMotor.Direction.FORWARD);
 
+        carouselSpinner.setDirection(DcMotor.Direction.FORWARD);
+        turretSpinner.setDirection(DcMotor.Direction.FORWARD);
 
-        // Set all motors to run without encoders.
-        frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        // Set the Motor's Encoder Setting
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         middleLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         middleRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-    }
+        carouselSpinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        turretSpinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-    // Finds the current angle of the robot relative to its initial position
-    public double calculateAngle(){
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
-        return (angles.firstAngle - straight.firstAngle);
     }
 }
 
