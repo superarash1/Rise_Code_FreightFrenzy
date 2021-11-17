@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -31,7 +33,6 @@ public class TIseBotTeleOp extends LinearOpMode {
         double mRight;
         double max;
 
-
         // Initialize the hardware variables using the init() method in the hardware class
         TIseBot.init(hardwareMap);
 
@@ -43,7 +44,6 @@ public class TIseBotTeleOp extends LinearOpMode {
         TIseBot.middleLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         TIseBot.middleRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        TIseBot.sliderLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addLine("Press Button to Activate Opmode");
@@ -55,20 +55,20 @@ public class TIseBotTeleOp extends LinearOpMode {
         while (opModeIsActive()){
 
             // Add robot data to telemetry
-            telemetry.addData("Angle:", TIseBot.calculateAngle());
+            telemetry.addData("Angle:", calculateAngle());
+            telemetry.addData("Turret Position: ", TIseBot.turret.getPosition());
             telemetry.update();
 
             // Gamepad controls for movement
             drive = gamepad1.left_stick_y; //Between -1 and 1
             turn = gamepad1.right_stick_x;
-            strafe = gamepad1.dpad_left? -1:gamepad1.dpad_right? 1: gamepad1.left_stick_x;
-
+            strafe = gamepad1.left_stick_x;
 
             // Mechanum Drive Calculations
-            fLeft = .8*drive - .8*strafe - .75*turn;
-            fRight = .7*drive + .8*strafe + .75*turn;
-            bRight = .7*drive - .8*strafe + .75*turn;
-            bLeft = .7*drive + .8*strafe - .75*turn;
+            fLeft = -.7*drive + .8*strafe - .75*turn;
+            fRight = -.7*drive - .8*strafe + .75*turn;
+            bRight = -.7*drive + .8*strafe + .75*turn;
+            bLeft = -.7*drive - .8*strafe - .75*turn;
             mLeft = drive;
             mRight = drive;
 
@@ -91,35 +91,40 @@ public class TIseBotTeleOp extends LinearOpMode {
             TIseBot.middleLeftMotor.setPower(mLeft);
             TIseBot.middleRightMotor.setPower(mRight);
 
-            // Turns the "claw" door
-            if(gamepad1.dpad_right) {
-                TIseBot.claw.setPower(1);
-            } else if(gamepad1.dpad_left) {
-                TIseBot.claw.setPower(-1);
-            } else {
-                TIseBot.claw.setPower(0);
+            if (gamepad1.right_trigger > 0){
+                TIseBot.turretSpinner.setPower(gamepad1.right_trigger);
+            } else if (gamepad1.left_trigger > 0){
+                TIseBot.turretSpinner.setPower(-gamepad1.left_trigger);
+            } else{
+                TIseBot.turretSpinner.setPower(0);
             }
 
-            // Turns the "joint" up and down
-            if (gamepad1.dpad_up) {
-                TIseBot.joint.setPower(0.4);
-            } else if (gamepad1.dpad_down) {
-                TIseBot.joint.setPower(-0.4);
-            } else {
-                TIseBot.joint.setPower(0);
+            double turretPos = TIseBot.turret.getPosition();
+
+            if (gamepad1.dpad_up){
+                TIseBot.turret.setPosition(turretPos - 0.02);
             }
 
-            // Moves the linear sliders up and down
-            if (gamepad1.right_trigger > 0) {
-                TIseBot.sliderLift.setPower(0.15);
-            } else if (gamepad1.left_trigger > 0) {
-                TIseBot.sliderLift.setPower(-0.15);
+            if (gamepad1.dpad_down) {
+                TIseBot.turret.setPosition(turretPos + 0.02);
+            }
+
+            if (gamepad1.right_bumper) {
+                TIseBot.carouselSpinner.setPower(0.6);
+            } else if (gamepad1.left_bumper) {
+                TIseBot.carouselSpinner.setPower(-0.6);
             } else {
-                TIseBot.sliderLift.setPower(0);
+                TIseBot.carouselSpinner.setPower(0);
             }
 
             // Pause for 20 mS each cycle = update 50 times a second.
             sleep(20);
         }
+    }
+    // Finds the current angle of the robot relative to its initial position
+    public double calculateAngle(){
+        Orientation angles = TIseBot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        return (angles.firstAngle - TIseBot.straight.firstAngle);
     }
 }
