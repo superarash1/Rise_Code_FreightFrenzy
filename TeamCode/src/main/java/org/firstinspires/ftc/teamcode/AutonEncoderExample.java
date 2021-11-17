@@ -12,7 +12,7 @@ public class AutonEncoderExample extends LinearOpMode {
     Hardware TIseBot = new Hardware();
     private ElapsedTime runtime = new ElapsedTime();
 
-    // Constants to find the amount of encoder ticks per MM
+    // Constants to find the amount of encoder ticks per CM
     static final double COUNTS_PER_MOTOR_REV = 537.7;
     static final double DRIVE_GEAR_REDUCTION = 1.35;
     static final double WHEEL_DIAMETER_CM = 9.60;
