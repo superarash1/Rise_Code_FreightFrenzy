@@ -26,7 +26,7 @@ public class TIseBotTeleOp extends LinearOpMode {
     public double spinnerCM = 1;
 
     static final double COUNTS_PER_MOTOR_REV = 537.7;
-    static final double ARM_COUNTS_PER_DEGREE = (COUNTS_PER_MOTOR_REV / 360)*;
+    static final double ARM_COUNTS_PER_DEGREE = (COUNTS_PER_MOTOR_REV / 360)*0.6;
 
     DcMotor[] wheels = new DcMotor[4];
 
