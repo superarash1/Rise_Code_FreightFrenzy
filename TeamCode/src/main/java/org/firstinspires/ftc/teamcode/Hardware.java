@@ -108,7 +108,7 @@ public class Hardware {
 
         intake.setDirection(DcMotor.Direction.FORWARD);
         arm1.setDirection(DcMotor.Direction.FORWARD);
-        arm2.setDirection(DcMotor.Direction.FORWARD);
+        arm2.setDirection(DcMotor.Direction.REVERSE);
 
         // Set the Motor's Encoder Setting
         frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
