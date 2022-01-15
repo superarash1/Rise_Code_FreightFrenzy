@@ -30,7 +30,7 @@ public class mattServo extends LinearOpMode {
             }
 
             telemetry.addData("Power of duck1:", 0.1*duckSpin);
-            telemetry.addData("Power of duck2:", -0.1*duckSpin);
+            telemetry.addData("Power of duck2:", 0.1*duckSpin);
         }
     }
 }
