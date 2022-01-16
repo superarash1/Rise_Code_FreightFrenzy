@@ -23,6 +23,7 @@ public class Hardware {
     public DcMotor frontRightMotor;
     public DcMotor backRightMotor;
     public DcMotor backLeftMotor;
+    public DcMotor carouselSpinner = null;
 
     public DcMotor intake;
     public DcMotor arm1;
@@ -30,7 +31,13 @@ public class Hardware {
 
     public Servo cageSpin1;
     public Servo cageSpin2;
+
+
     public Servo gate;
+//
+//    public Servo boxO;
+//    public Servo boxT;
+//    public Servo boxT2;
 
 //  public DistanceSensor backDistance;
 
@@ -61,10 +68,13 @@ public class Hardware {
         intake = hardwareMap.get(DcMotor.class, "intake");
         arm1 = hardwareMap.get(DcMotor.class, "arm1");
         arm2 = hardwareMap.get(DcMotor.class, "arm2");
+        carouselSpinner = hardwareMap.get(DcMotor.class, "carouselSpinner");
+//
+//        boxT = hardwareMap.get(Servo.class, "cageSpin1");
+//        boxT2 = hardwareMap.get(Servo.class, "cageSpin2");
+//        boxO = hardwareMap.get(Servo.class, "gate");
 
-        cageSpin1 = hardwareMap.get(Servo.class, "cageSpin1");
-        cageSpin2 = hardwareMap.get(Servo.class, "cageSpin2");
-        gate = hardwareMap.get(Servo.class, "gate");
+
 //
 //        backDistance = hardwareMap.get(DistanceSensor.class, "backDistance");
 
@@ -82,6 +92,7 @@ public class Hardware {
         intake.setPower(0);
         arm1.setPower(0);
         arm2.setPower(0);
+        carouselSpinner.setPower(0);
 
         // IMU Setup
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -109,6 +120,7 @@ public class Hardware {
         intake.setDirection(DcMotor.Direction.FORWARD);
         arm1.setDirection(DcMotor.Direction.FORWARD);
         arm2.setDirection(DcMotor.Direction.REVERSE);
+        carouselSpinner.setDirection(DcMotor.Direction.FORWARD);
 
         // Set the Motor's Encoder Setting
         frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
