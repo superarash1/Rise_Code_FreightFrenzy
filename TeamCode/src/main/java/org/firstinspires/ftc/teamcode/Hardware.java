@@ -74,6 +74,11 @@ public class Hardware {
 //        boxT2 = hardwareMap.get(Servo.class, "cageSpin2");
 //        boxO = hardwareMap.get(Servo.class, "gate");
 
+        cageSpin1 = hardwareMap.get(Servo.class, "cageSpin1");
+        cageSpin2 = hardwareMap.get(Servo.class, "cageSpin2");
+
+        gate = hardwareMap.get(Servo.class, "gate");
+
 
 //
 //        backDistance = hardwareMap.get(DistanceSensor.class, "backDistance");
