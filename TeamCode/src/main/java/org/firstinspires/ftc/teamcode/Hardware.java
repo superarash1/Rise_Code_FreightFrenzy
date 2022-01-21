@@ -136,6 +136,7 @@ public class Hardware {
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
     }
 }
 

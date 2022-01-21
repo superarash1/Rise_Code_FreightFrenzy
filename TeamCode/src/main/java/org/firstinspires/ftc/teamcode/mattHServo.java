@@ -17,11 +17,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class mattHServo {
-    public CRServo duck1;
-    public CRServo duck2;
 
-    com.qualcomm.robotcore.hardware.HardwareMap hardwareMap = null;
+    com.qualcomm.robotcore.hardware.HardwareMap hardwareMap;
     public ElapsedTime runtime = new ElapsedTime();
+
+
+    public CRServo carSpinL;
+    //    public CRServo duck2;
+    //    open and close
+    public Servo boxO;
+//    box turning
+    public CRServo boxT1;
+    public CRServo boxT2;
+
 
     // Constructor (Creating Object Type)
     public mattHServo() {
@@ -32,7 +40,12 @@ public class mattHServo {
     public void init(com.qualcomm.robotcore.hardware.HardwareMap hwMap) {
         hardwareMap = hwMap;
 
-        duck1 = hardwareMap.get(CRServo.class, "duck1");
-        duck2 = hardwareMap.get(CRServo.class, "duck2");
+        carSpinL = hardwareMap.get(CRServo.class, "carSpinL");
+//        duck2 = hardwareMap.get(CRServo.class, "duck2");
+        boxO = hardwareMap.get(Servo.class, "boxO");
+        boxT1 = hardwareMap.get(CRServo.class, "boxT1");
+        boxT2 = hardwareMap.get(CRServo.class, "boxT2");
+
+
     }
 }
