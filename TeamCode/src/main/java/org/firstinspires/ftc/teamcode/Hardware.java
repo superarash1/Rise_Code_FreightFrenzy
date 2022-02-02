@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -15,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.outoftheboxrobotics.neutrinoi2c.Rev2mDistanceSensor.AsyncRev2MSensor;
 
 public class Hardware {
 
@@ -23,18 +27,19 @@ public class Hardware {
     public DcMotor frontRightMotor;
     public DcMotor backRightMotor;
     public DcMotor backLeftMotor;
-    public DcMotor carouselSpinner = null;
 
     public DcMotor intake;
-    public DcMotor arm1;
-    public DcMotor arm2;
+    public DcMotorEx arm1;
+    public DcMotorEx arm2;
+    public DcMotorEx cSpinRight;
 
-    public Servo cageSpin1;
-    public Servo cageSpin2;
+    public CRServoImplEx cageSpin1;
+//    public CRServo cageSpin2;
 
+//    public CRServo cSpinRight;
 
-    public Servo gate;
-//
+    public ServoEx gate;
+
 //    public Servo boxO;
 //    public Servo boxT;
 //    public Servo boxT2;
@@ -43,6 +48,9 @@ public class Hardware {
 
     // Define Sensor Variables
     public BNO055IMU imu;
+//    public Rev2mDistanceSensor sensor;
+
+
     public Orientation straight = null;
 
     // Local OpMode members
@@ -66,24 +74,23 @@ public class Hardware {
 
 
         intake = hardwareMap.get(DcMotor.class, "intake");
-        arm1 = hardwareMap.get(DcMotor.class, "arm1");
-        arm2 = hardwareMap.get(DcMotor.class, "arm2");
-        carouselSpinner = hardwareMap.get(DcMotor.class, "carouselSpinner");
-//
-//        boxT = hardwareMap.get(Servo.class, "cageSpin1");
-//        boxT2 = hardwareMap.get(Servo.class, "cageSpin2");
-//        boxO = hardwareMap.get(Servo.class, "gate");
+        arm1 = hardwareMap.get(DcMotorEx.class, "arm1");
+        arm2 = hardwareMap.get(DcMotorEx.class, "arm2");
+        cSpinRight = hardwareMap.get(DcMotorEx.class, "arm2");
 
-        cageSpin1 = hardwareMap.get(Servo.class, "cageSpin1");
-        cageSpin2 = hardwareMap.get(Servo.class, "cageSpin2");
+        cageSpin1 = hardwareMap.get(CRServoImplEx.class, "cageSpin1");
+//        cageSpin2 = hardwareMap.get(CRServo.class, "cageSpin2");
 
-        gate = hardwareMap.get(Servo.class, "gate");
+//        cSpinRight = hardwareMap.get(CRServo.class, "carouselSpinnerLeft");
+
+        gate = hardwareMap.get(ServoEx.class, "gate");
 
 
 //
 //        backDistance = hardwareMap.get(DistanceSensor.class, "backDistance");
 
         //Find Sensors in phone config
+//        sensor = hardwareMap.get(Rev2mDistanceSensor.class, "distanceSensor");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
 
 
@@ -93,11 +100,15 @@ public class Hardware {
         backRightMotor.setPower(0);
         backLeftMotor.setPower(0);
 
-//
         intake.setPower(0);
         arm1.setPower(0);
         arm2.setPower(0);
-        carouselSpinner.setPower(0);
+        cSpinRight.setPower(0);
+
+        cageSpin1.setPower(0);
+//        cageSpin2.setPower(0);
+//
+//        cSpinRight.setPower(0);
 
         // IMU Setup
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -108,7 +119,7 @@ public class Hardware {
         parameters.accelUnit = BNO055IMU.AccelUnit.MILLI_EARTH_GRAVITY;
             /*
             We never use the accelerometer functions of the imu, so we set the
-            accel unit to milli-earth-gravities as a joke
+            accel unit to milli-e/arth-gravities as a joke
             */
 
         imu.initialize(parameters);
@@ -123,9 +134,8 @@ public class Hardware {
 
 
         intake.setDirection(DcMotor.Direction.FORWARD);
-        arm1.setDirection(DcMotor.Direction.FORWARD);
-        arm2.setDirection(DcMotor.Direction.REVERSE);
-        carouselSpinner.setDirection(DcMotor.Direction.FORWARD);
+        arm1.setDirection(DcMotor.Direction.REVERSE);
+        arm2.setDirection(DcMotor.Direction.FORWARD);
 
         // Set the Motor's Encoder Setting
         frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -136,6 +146,7 @@ public class Hardware {
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        cSpinRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
 }
