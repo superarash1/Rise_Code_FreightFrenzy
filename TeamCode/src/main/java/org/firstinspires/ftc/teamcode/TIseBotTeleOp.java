@@ -11,8 +11,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.opencv.core.Mat;
+import org.outoftheboxrobotics.neutrinoi2c.Rev2mDistanceSensor.AsyncRev2MSensor;
 
 @TeleOp
 public class TIseBotTeleOp extends LinearOpMode {
@@ -24,7 +26,7 @@ public class TIseBotTeleOp extends LinearOpMode {
     public double globalAngle;
     Orientation lastAngles = new Orientation();
 
-    public double spinnerCM = 1;
+    public double firstError;
 
     static final double COUNTS_PER_MOTOR_REV = 537.7;
     static final double ARM_COUNTS_PER_DEGREE = (COUNTS_PER_MOTOR_REV / 360)*0.45;
@@ -55,6 +57,8 @@ public class TIseBotTeleOp extends LinearOpMode {
         // Initialize the hardware variables using the init() method in the hardware class
         TIseBot.init(hardwareMap);
 
+//        AsyncRev2MSensor asyncSensor = new AsyncRev2MSensor(TIseBot.sensor);
+
         wheels[0] = TIseBot.frontLeftMotor;
         wheels[1] = TIseBot.frontRightMotor;
         wheels[2] = TIseBot.backRightMotor;
@@ -76,8 +80,10 @@ public class TIseBotTeleOp extends LinearOpMode {
         TIseBot.arm2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         TIseBot.arm2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        TIseBot.arm1.setTargetPosition(1);
-        TIseBot.arm2.setTargetPosition(1);
+
+        TIseBot.arm1.setTargetPosition(2);
+        TIseBot.arm2.setTargetPosition(2);
+        firstError = (TIseBot.arm1.getTargetPosition()*ARM_COUNTS_PER_DEGREE - 48) - realAngle;
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addLine("Press Button to Activate OpMode");
@@ -101,11 +107,6 @@ public class TIseBotTeleOp extends LinearOpMode {
             turn = Math.pow(gamepad1.right_stick_x, 3);
             strafe = Math.pow(gamepad1.left_stick_x, 3);
 
-//            drive = gamepad1.left_stick_y;
-//            turn = gamepad1.right_stick_x;
-//            strafe = gamepad1.left_stick_x;
-
-
             // Mechanum Drive Calculations
             fLeft = -.7*drive + .8*strafe + .75*turn;
             fRight = -.7*drive - .8*strafe - .75*turn;
@@ -124,8 +125,8 @@ public class TIseBotTeleOp extends LinearOpMode {
             // Set power to the motors
             TIseBot.frontRightMotor.setPower(fRight);
             TIseBot.frontLeftMotor.setPower(fLeft);
-            TIseBot.backRightMotor.setPower((bRight)*1.5);
-            TIseBot.backLeftMotor.setPower((bLeft)*1.5);
+            TIseBot.backRightMotor.setPower(bRight);
+            TIseBot.backLeftMotor.setPower(bLeft);
 
 
 //            if (gamepad1.left_bumper) {
@@ -158,61 +159,34 @@ public class TIseBotTeleOp extends LinearOpMode {
             TIseBot.intake.setPower((gamepad1.right_trigger - gamepad1.left_trigger)*.2);
 
             if (gamepad1.dpad_right){
-                TIseBot.cageSpin1.setPosition(TIseBot.cageSpin1.getPosition() + 0.02);
-                TIseBot.cageSpin2.setPosition(TIseBot.cageSpin2.getPosition() + 0.02);
-            }
+                TIseBot.cageSpin1.setPower(0.1);
 
-            if (gamepad1.dpad_left){
-                TIseBot.cageSpin1.setPosition(TIseBot.cageSpin1.getPosition() - 0.02);
-                TIseBot.cageSpin2.setPosition(TIseBot.cageSpin2.getPosition() - 0.02);
-            }
+            } else if (gamepad1.dpad_left){
+                TIseBot.cageSpin1.setPower(0.1);
 
-            if (gamepad1.b && gateToggle1 && coolDown > 10){
-                TIseBot.gate.setPosition(TIseBot.gate.getPosition() + 0.5);
-                gateToggle1 = false;
-                gateToggle2 = true;
-            }
+            } else {
+                TIseBot.cageSpin1.setPower(0);
 
-            if (gamepad1.b && gateToggle2 && coolDown > 10){
-                TIseBot.gate.setPosition(TIseBot.gate.getPosition() - 0.5);
-                gateToggle2 = false;
-                gateToggle1 = true;
             }
 
 
-            if (gamepad1.dpad_up && TIseBot.arm1.getTargetPosition() == 290){
-                TIseBot.arm1.setTargetPosition(315);
-                TIseBot.arm2.setTargetPosition(315);
-            }
-
-            if (gamepad1.dpad_up && TIseBot.arm1.getTargetPosition() == 315){
-                TIseBot.arm1.setTargetPosition(330);
-                TIseBot.arm2.setTargetPosition(330);
-            }
-
-            if (gamepad1.dpad_down && TIseBot.arm1.getTargetPosition() == 330){
-                TIseBot.arm1.setTargetPosition(315);
-                TIseBot.arm2.setTargetPosition(315);
-            }
-
-            if (gamepad1.dpad_down && TIseBot.arm1.getTargetPosition() == 315){
-                TIseBot.arm1.setTargetPosition(290);
-                TIseBot.arm2.setTargetPosition(290);
-            }
 
             if (gamepad1.right_bumper){
-                TIseBot.carouselSpinner.setPower(-0.3);
-            } else{
-                TIseBot.carouselSpinner.setPower(0);
+                TIseBot.cSpinRight.setPower(0.25);
+            }else {
+                TIseBot.cSpinRight.setPower(0);
             }
 
-            coolDown++;
+//            telemetry.addData("Distance", asyncSensor.getDistance(DistanceUnit.CM));
+//            telemetry.addData("Last Reading", asyncSensor.getLastMeasurementTimestamp());
+//
 
             // Pause for 20 mS each cycle = update 50 times a second.
             sleep(20);
         }
 
         TIseBot.arm1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        TIseBot.arm2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         driveThread.interrupt();
     }
     // Finds the current angle of the robot relative to its initial position
@@ -260,11 +234,11 @@ public class TIseBotTeleOp extends LinearOpMode {
     }
 
     public void armSpinner(){
-        double kp = 0.002;
-        double kd = 0.0016; // 0.001
-        double ki = 0.1;
+        double kp = 0.029; // 0.029
+        double kd = 0.00105; // 0.0011
+        double ki = 0.0011; // 0.0011
 
-        double kGravity = 0.04; //0.04
+        double kGravity = 0.00475; // 0.00475
 
         double gravity = 0;
         double power = 0;
@@ -278,7 +252,7 @@ public class TIseBotTeleOp extends LinearOpMode {
         double previousDerivativeSecond = 0;
         double derivativeSecond = 0;
 
-        double maxIntegralSum = 0.05;
+        double maxIntegralSum = 0.2;
 
         double previousError = 0;
         double error = 0;
@@ -289,7 +263,7 @@ public class TIseBotTeleOp extends LinearOpMode {
         double dt = 50;
         double dts = dt/1000;
 
-        double a = 0.5; // a can be anything from 0 < a < 1
+        double a = 0.55; // a can be anything from 0 < a < 1     0.55
         double previousFilterEstimate = 0;
         double currentFilterEstimate = 0;
 
@@ -298,22 +272,23 @@ public class TIseBotTeleOp extends LinearOpMode {
         boolean toggle1 = true;
         boolean toggle2 = false;
 
-        double firstError = 0;
-
         while (opModeIsActive()) {
-            telemetry.addData("Target Angle: ", TIseBot.arm1.getTargetPosition()*ARM_COUNTS_PER_DEGREE - 45);
-            telemetry.addData("Current Angle: ", TIseBot.arm1.getCurrentPosition()*ARM_COUNTS_PER_DEGREE - 45);
+            realAngle = (TIseBot.arm1.getCurrentPosition()*ARM_COUNTS_PER_DEGREE ) - 48;
+            telemetry.addData("Target Angle: ", TIseBot.arm1.getTargetPosition()*ARM_COUNTS_PER_DEGREE - 48);
+            telemetry.addData("Current Angle: ", realAngle);
+
+            telemetry.addData("runtime", runtime.seconds());
 
             telemetry.addData("Gravity", kGravity*gravity);
-
-            telemetry.addData("dtS", runtime.seconds());
 
             telemetry.addData("Power", power);
             telemetry.addData("Derivative: ",  (kd * (currentFilterEstimate/dts)));
 
             telemetry.addData("Error: ", error);
 
-            telemetry.addData("Proportion: ", error*kp);
+            telemetry.addData("firstError", firstError);
+
+            telemetry.addData("Proportion: ", P*kp);
 
             telemetry.addData("Integral: ", ki * area);
 
@@ -327,24 +302,23 @@ public class TIseBotTeleOp extends LinearOpMode {
 
             telemetry.update();
 
-
-            if (gamepad1.x && toggle1 && coolDown > 100 && error < 50){
-                TIseBot.arm1.setTargetPosition(5);
-                TIseBot.arm2.setTargetPosition(5);
-                toggle1 = false;
-                toggle2 = true;
-            } else if (gamepad1.x && toggle2 && coolDown > 100 && error < 50){
-                TIseBot.arm1.setTargetPosition(290);
-                TIseBot.arm2.setTargetPosition(290);
-                toggle1 = true;
-                toggle2 = false;
-            }
+//            if (gamepad1.x && toggle1 && coolDown > 100 && error < 50){
+//                TIseBot.arm1.setTargetPosition(15);
+//                TIseBot.arm2.setTargetPosition(15);
+//                toggle1 = false;
+//                toggle2 = true;
+//            } else if (gamepad1.x && toggle2 && coolDown > 100 && error < 50){
+//                TIseBot.arm1.setTargetPosition(270);
+//                TIseBot.arm2.setTargetPosition(270);
+//                toggle1 = true;
+//                toggle2 = false;
+//            }
 
             previousError = error;
 
-            error = TIseBot.arm1.getTargetPosition()*ARM_COUNTS_PER_DEGREE - realAngle;
+            error = (TIseBot.arm1.getTargetPosition()*ARM_COUNTS_PER_DEGREE - 48) - realAngle;
 
-//            P = error/Math.abs(TIseBot.arm1.getTargetPosition()*ARM_COUNTS_PER_DEGREE - 49);
+            P = error/Math.abs(firstError);
             errorChange = error - previousError;
 
             previousFilterEstimate = currentFilterEstimate;
@@ -357,9 +331,7 @@ public class TIseBotTeleOp extends LinearOpMode {
             if (area*previousArea < 0) previousArea = 0;
 
             area = (error * dts) + previousArea;
-
-//            maxIntegralSum = Math.cos((TIseBot.arm1.getTargetPosition()*ARM_COUNTS_PER_DEGREE - 49)*(Math.PI/180));
-
+            
             if (area > maxIntegralSum) {
                 area = maxIntegralSum;
             }
@@ -368,15 +340,44 @@ public class TIseBotTeleOp extends LinearOpMode {
                 area = -maxIntegralSum;
             }
 
-            gravity = Math.cos((realAngle - 49)*(Math.PI/180));
+//            if (runtime.seconds() > 5.8 && runtime.seconds() < 6.2){
+//                TIseBot.arm1.setTargetPosition(270);
+//                TIseBot.arm2.setTargetPosition(270);
+//
+//                firstError = (TIseBot.arm1.getTargetPosition()*ARM_COUNTS_PER_DEGREE - 48) - realAngle;
+//                previousArea = 0;
+//            }
+//
+//            if (runtime.seconds()>13.8 && runtime.seconds() < 14.2){
+//                TIseBot.arm1.setTargetPosition(15);
+//                TIseBot.arm2.setTargetPosition(15);
+//
+//                firstError = (TIseBot.arm1.getTargetPosition()*ARM_COUNTS_PER_DEGREE - 48) - realAngle;
+//                previousArea = 0;
+//            }
+//
+//            if (runtime.seconds() > 19.8 && runtime.seconds() < 20.2){
+//                TIseBot.arm1.setTargetPosition(315);
+//                TIseBot.arm2.setTargetPosition(315);
+//
+//                firstError = (TIseBot.arm1.getTargetPosition()*ARM_COUNTS_PER_DEGREE - 48) - realAngle;
+//                previousArea = 0;
+//            }
+//
+//            if (runtime.seconds() > 29.8 && runtime.seconds() < 30.2){
+//                TIseBot.arm1.setTargetPosition(350);
+//                TIseBot.arm2.setTargetPosition(350);
+//
+//                firstError = (TIseBot.arm1.getTargetPosition()*ARM_COUNTS_PER_DEGREE - 48) - realAngle;
+//                previousArea = 0;
+//            }
 
-            //power = kp * P + kd * ((error - previousError)/dts) + ki * area + (Math.signum(error)*kGravity*gravity);
-            power = kp * error + kd * (currentFilterEstimate/dts) + ki * area + (Math.signum(error)*kGravity*gravity);
+            gravity = Math.cos(Math.toRadians(realAngle));
 
-            //power = kp * error + kd * Derivative + kd2 * derivativeSecond + ki * area + (Math.signum(error)*kGravity*gravity);
+            power = kp * P + kd * (currentFilterEstimate/dts) + ki * area + (kGravity*gravity);
 
-            TIseBot.arm1.setPower(-power);
-            TIseBot.arm2.setPower(power);
+            TIseBot.arm1.setPower(power);
+            TIseBot.arm2.setPower(-power);
 
             coolDown++;
 
