@@ -1,0 +1,69 @@
+package org.firstinspires.ftc.teamcode.OpenCV.VisionPipelines;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
+import org.openftc.easyopencv.OpenCvPipeline;
+
+public class colorReading extends OpenCvPipeline {
+
+    Telemetry telemetry;
+
+    /** Most important section of the code: Colors **/
+    static final Scalar GOLD = new Scalar(255, 215, 0);
+    static final Scalar CRIMSON = new Scalar(220, 20, 60);
+    static final Scalar AQUA = new Scalar(79, 195, 247);
+    static final Scalar PARAKEET = new Scalar(3, 192, 74);
+    static final Scalar CYAN = new Scalar(0, 139, 139);
+
+    // Create a Mat object that will hold the color data
+    Mat HSV = new Mat();
+
+    public colorReading(Telemetry telemetry) {
+            this.telemetry = telemetry;
+    }
+
+    // Creating an array for each region which have an element for each channel of interest
+    public int[] HSV_Value_1 = new int[3];
+
+    @Override
+    public Mat processFrame(Mat input) {
+
+        // Define the dimensions and location of each region
+        Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(input.cols()/2 - 50,input.rows()/2 - 50);
+        int REGION1_WIDTH = 100;
+        int REGION1_HEIGHT = 100;
+
+        // Create the points that will be used to make the rectangles for the region
+        Point region1_pointA = new Point(REGION1_TOPLEFT_ANCHOR_POINT.x, REGION1_TOPLEFT_ANCHOR_POINT.y);
+        Point region1_pointB = new Point(REGION1_TOPLEFT_ANCHOR_POINT.x + REGION1_WIDTH, REGION1_TOPLEFT_ANCHOR_POINT.y + REGION1_HEIGHT);
+
+        // Creates a field of type "Mat"
+        Mat region1;
+
+
+        // Converts the RGB colors from the video to HSV, which is more useful for image analysis
+        Imgproc.cvtColor(input, HSV, Imgproc.COLOR_RGB2HSV);
+
+        // Creates the regions and finds the HSV values for each of the regions
+        region1 = HSV.submat(new Rect(region1_pointA, region1_pointB));
+
+        // Loops through each channel of interest
+        for (int i = 0; i < 3; i++){
+            // Finds the average HSV value for each channel of interest (The "i" representing the channel of interest)
+            HSV_Value_1[i] = (int) Core.mean(region1).val[i];
+        }
+
+        // Draws rectangles representing the regions in the camera stream
+        Imgproc.rectangle(HSV, region1_pointA, region1_pointB, GOLD,1);
+
+        telemetry.addData("Region 1", "%7d, %7d, %7d", HSV_Value_1[0], HSV_Value_1[1], HSV_Value_1[2]);
+        telemetry.update();
+
+        return HSV;
+    }
+}
