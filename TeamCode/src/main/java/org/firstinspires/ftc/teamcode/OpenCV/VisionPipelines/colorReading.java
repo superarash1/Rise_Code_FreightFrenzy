@@ -21,49 +21,48 @@ public class colorReading extends OpenCvPipeline {
     static final Scalar CYAN = new Scalar(0, 139, 139);
 
     // Create a Mat object that will hold the color data
-    Mat HSV = new Mat();
+    Mat colorSpace = new Mat();
 
     public colorReading(Telemetry telemetry) {
             this.telemetry = telemetry;
     }
 
     // Creating an array for each region which have an element for each channel of interest
-    public int[] HSV_Value_1 = new int[3];
+    public int[] channelsOfInterest = new int[3];
 
     @Override
     public Mat processFrame(Mat input) {
 
         // Define the dimensions and location of each region
-        Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(input.cols()/2 - 50,input.rows()/2 - 50);
-        int REGION1_WIDTH = 100;
-        int REGION1_HEIGHT = 100;
+        Point REGION_TOPLEFT_ANCHOR_POINT = new Point(input.cols()/2 - 50,input.rows()/2 - 50);
+        int REGION_WIDTH = 100;
+        int REGION_HEIGHT = 100;
 
         // Create the points that will be used to make the rectangles for the region
-        Point region1_pointA = new Point(REGION1_TOPLEFT_ANCHOR_POINT.x, REGION1_TOPLEFT_ANCHOR_POINT.y);
-        Point region1_pointB = new Point(REGION1_TOPLEFT_ANCHOR_POINT.x + REGION1_WIDTH, REGION1_TOPLEFT_ANCHOR_POINT.y + REGION1_HEIGHT);
+        Point region_pointA = new Point(REGION_TOPLEFT_ANCHOR_POINT.x, REGION_TOPLEFT_ANCHOR_POINT.y);
+        Point region_pointB = new Point(REGION_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH, REGION_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
 
         // Creates a field of type "Mat"
-        Mat region1;
-
+        Mat region;
 
         // Converts the RGB colors from the video to HSV, which is more useful for image analysis
-        Imgproc.cvtColor(input, HSV, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(input, colorSpace, Imgproc.COLOR_RGB2HSV_FULL);
 
         // Creates the regions and finds the HSV values for each of the regions
-        region1 = HSV.submat(new Rect(region1_pointA, region1_pointB));
+        region = colorSpace.submat(new Rect(region_pointA, region_pointB));
 
         // Loops through each channel of interest
         for (int i = 0; i < 3; i++){
             // Finds the average HSV value for each channel of interest (The "i" representing the channel of interest)
-            HSV_Value_1[i] = (int) Core.mean(region1).val[i];
+            channelsOfInterest[i] = (int) Core.mean(region).val[i];
         }
 
         // Draws rectangles representing the regions in the camera stream
-        Imgproc.rectangle(HSV, region1_pointA, region1_pointB, GOLD,1);
+        Imgproc.rectangle(colorSpace, region_pointA, region_pointB, GOLD,1);
 
-        telemetry.addData("Region 1", "%7d, %7d, %7d", HSV_Value_1[0], HSV_Value_1[1], HSV_Value_1[2]);
+        telemetry.addData("Region 1", "%7d, %7d, %7d", channelsOfInterest[0], channelsOfInterest[1], channelsOfInterest[2]);
         telemetry.update();
 
-        return HSV;
+        return colorSpace;
     }
 }
