@@ -4,6 +4,7 @@ import static org.opencv.core.Core.compare;
 import static org.opencv.core.Core.inRange;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -29,7 +30,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-@Autonomous
+@Disabled
 public class OpenCV_Masking extends LinearOpMode {
 
     // Define Webcam
@@ -114,6 +115,10 @@ public class OpenCV_Masking extends LinearOpMode {
 
             Imgproc.cvtColor(input, HSV, Imgproc.COLOR_RGB2HSV);
 
+            Size kSize = new Size(3, 3);
+
+            Imgproc.blur(HSV, HSV, kSize);
+
             Scalar lowYellow = new Scalar(10, 160, 160); // 20, 100, 100
             Scalar highYellow = new Scalar(25, 255, 255); //30, 245, 245
             Mat maskYellow = new Mat();
@@ -124,8 +129,6 @@ public class OpenCV_Masking extends LinearOpMode {
 
             inRange(HSV, lowYellow, highYellow, maskYellow);
             inRange(HSV, lowWhite, highWhite, maskWhite);
-
-//            Core.inRange();
 
             yellowContours.clear();
             whiteContours.clear();
@@ -142,19 +145,24 @@ public class OpenCV_Masking extends LinearOpMode {
                     Imgproc.rectangle(input, yellowMask, CRIMSON, 2);
                 }
             }
+//
+//            for (int i = 0; i < whiteContours.size(); i++){
+//                if (filterContours(whiteContours.get(i))){
+//                    whiteMask = Imgproc.boundingRect(whiteContours.get(i));
+//                    Imgproc.rectangle(input, whiteMask, AQUA, 2);
+//                }
+//            }
+//
+//            yellowMask = Imgproc.boundingRect(maskYellow);
+//            Imgproc.rectangle(input, yellowMask, GOLD, 2); // input
+//            whiteMask = Imgproc.boundingRect(maskWhite);
+//            Imgproc.rectangle(input, whiteMask, PARAKEET, 2); // input
 
-            for (int i = 0; i < whiteContours.size(); i++){
-                if (filterContours(whiteContours.get(i))){
-                    whiteMask = Imgproc.boundingRect(whiteContours.get(i));
-                    Imgproc.rectangle(input, whiteMask, AQUA, 2);
-                }
-            }
-            yellowMask = Imgproc.boundingRect(maskYellow);
-            Imgproc.rectangle(input, yellowMask, GOLD, 2); // input
-            whiteMask = Imgproc.boundingRect(maskWhite);
-            Imgproc.rectangle(input, whiteMask, PARAKEET, 2); // input
+            HSV.release();
+            maskWhite.release();
+            maskYellow.release();
 
-            return input;
+            return HSV;
         }
     }
 }

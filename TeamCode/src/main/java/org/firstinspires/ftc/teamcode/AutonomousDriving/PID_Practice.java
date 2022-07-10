@@ -7,9 +7,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Hardware;
+import org.firstinspires.ftc.teamcode.OldFFCode.Hardware;
 
-@Autonomous
+
+@Disabled
 public class PID_Practice extends LinearOpMode {
 
     Hardware TIseBot = new Hardware();

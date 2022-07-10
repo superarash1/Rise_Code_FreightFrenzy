@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Hardware;
+import org.firstinspires.ftc.teamcode.OldFFCode.Hardware;
 
-@Autonomous
+@Disabled
 public class AutonEncoderExample extends LinearOpMode {
 
     Hardware TIseBot = new Hardware();

@@ -33,9 +33,9 @@ public class HardwareMap {
     public BNO055IMU imu;
 
     public DistanceSensor sensorFront;
-    //public DistanceSensor sensorRight;
+    public DistanceSensor sensorRight;
     public DistanceSensor sensorLeft;
-    //public DistanceSensor sensorBack;
+    public DistanceSensor sensorBack;
 
     public Orientation straight = null;
 

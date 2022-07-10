@@ -6,6 +6,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
@@ -34,9 +35,9 @@ public class colorReading extends OpenCvPipeline {
     public Mat processFrame(Mat input) {
 
         // Define the dimensions and location of each region
-        Point REGION_TOPLEFT_ANCHOR_POINT = new Point(input.cols()/2 - 50,input.rows()/2 - 50);
-        int REGION_WIDTH = 100;
-        int REGION_HEIGHT = 100;
+        Point REGION_TOPLEFT_ANCHOR_POINT = new Point(input.cols()/2 - 12.5,input.rows()/2 - 12.5);
+        int REGION_WIDTH = 25;
+        int REGION_HEIGHT = 25;
 
         // Create the points that will be used to make the rectangles for the region
         Point region_pointA = new Point(REGION_TOPLEFT_ANCHOR_POINT.x, REGION_TOPLEFT_ANCHOR_POINT.y);
@@ -46,8 +47,13 @@ public class colorReading extends OpenCvPipeline {
         Mat region;
 
         // Converts the RGB colors from the video to HSV, which is more useful for image analysis
-        Imgproc.cvtColor(input, colorSpace, Imgproc.COLOR_RGB2HSV_FULL);
+        Imgproc.cvtColor(input, colorSpace, Imgproc.COLOR_RGB2HSV);
 
+        Core.extractChannel(colorSpace, colorSpace, 1);
+
+        Size kSize = new Size(5, 5);
+
+        Imgproc.blur(colorSpace, colorSpace, kSize);
         // Creates the regions and finds the HSV values for each of the regions
         region = colorSpace.submat(new Rect(region_pointA, region_pointB));
 
@@ -61,6 +67,8 @@ public class colorReading extends OpenCvPipeline {
         Imgproc.rectangle(colorSpace, region_pointA, region_pointB, GOLD,1);
 
         telemetry.addData("Region 1", "%7d, %7d, %7d", channelsOfInterest[0], channelsOfInterest[1], channelsOfInterest[2]);
+        telemetry.addData("rows", input.rows());
+        telemetry.addData("columns", input.cols());
         telemetry.update();
 
         return colorSpace;

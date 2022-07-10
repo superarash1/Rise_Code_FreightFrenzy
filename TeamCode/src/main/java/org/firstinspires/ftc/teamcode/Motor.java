@@ -9,12 +9,12 @@ public class Motor {
     DcMotorEx motor;
 
     //Declare all the constants in the Motor class
-    private double CPR;
-    private double WHEEL_DIAMETER;
-    private double MAX_RPM;
-    private double TICKS_PER_INCH;
-    private double ARM_COUNTS_PER_DEGREE;
-    private double NANOSECONDS_PER_MIN = 6e+10;
+    public double CPR;
+    public double WHEEL_DIAMETER;
+    public double MAX_RPM;
+    public double TICKS_PER_INCH;
+    public double ARM_COUNTS_PER_DEGREE;
+    public double NANOSECONDS_PER_MIN = 6e+10;
 
        /* Constructor for drive train motors
        Parameter name : Pass in name of the motor on the RC phone config

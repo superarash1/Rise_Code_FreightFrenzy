@@ -19,6 +19,8 @@ public class BotMechanisms {
     private Servo gate;
     private CRServo carouselSpinner;
 
+    PIDF_Controller PIDF;
+
     private Telemetry telemetry;
     private Gamepad gamepad1;
     private HardwareMap hardwareMap;
@@ -42,6 +44,7 @@ public class BotMechanisms {
         this.armLeft = new Motor(Arm1, 537.7, 3.77953, hardwareMap);
         this.armRight = new Motor(Arm2, 537.7, 3.77953, hardwareMap);
 
+        PIDF = new PIDF_Controller(telemetry);
         cageSpin = hardwareMap.get(ServoImplEx.class, "cageSpin");
         gate = hardwareMap.get(Servo.class, "gate");
         carouselSpinner = hardwareMap.get(CRServo.class, "cSpin");
@@ -63,7 +66,7 @@ public class BotMechanisms {
 
     }
 
-    PIDF_Controller PIDF = new PIDF_Controller();
+
 
     double firstError = 5;
 
@@ -203,13 +206,6 @@ public class BotMechanisms {
         telemetry.addData("Angle:", this.armLeft.getCurrPosDegrees());
         telemetry.addData("Target Position", targetPos);
 
-        telemetry.addData("Power", PIDF.getPower());
-        telemetry.addData("Error:", PIDF.getError());
-        telemetry.addData("First Error", firstError);
-        telemetry.addData("Gravity", PIDF.getGravity());
-        telemetry.addData("Proportion:", PIDF.getProportion());
-        telemetry.addData("Derivative:", PIDF.getDerivative());
-        telemetry.addData("Integral:", PIDF.getIntegral());
 //        telemetry.addData("Delta Time", PIDF.getDeltaTime());
 
         telemetry.update();
