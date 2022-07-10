@@ -47,6 +47,8 @@ public class PIDF_Controller {
 
     private double power = 0;
 
+    //TODO: ILQR
+
     public PIDF_Controller(Telemetry telemetry){
         this.telemetry = telemetry;
         this.error = tolerance + 1;
@@ -67,15 +69,8 @@ public class PIDF_Controller {
         return power;
     }
 
+    //TODO: move telemetry out
     public double PIDF(double currPos, double targetPos, double kp, double kd){
-
-        telemetry.addData("Error", error);
-        telemetry.addData("Previous Error", previousError);
-        telemetry.addData("Derivative:", D);
-        telemetry.addData("Power", power);
-        telemetry.addData("Proportion:", P);
-        telemetry.addData("Delta Time", deltaTime);
-        telemetry.addData("Target", targetPos);
 
         error = targetPos - currPos;
 
@@ -87,6 +82,14 @@ public class PIDF_Controller {
         D = kd * ((error - previousError) / deltaTime);
 
         power =  P + D;
+
+        telemetry.addData("Error", error);
+        telemetry.addData("Previous Error", previousError);
+        telemetry.addData("Derivative:", D);
+        telemetry.addData("Power", power);
+        telemetry.addData("Proportion:", P);
+        telemetry.addData("Delta Time", deltaTime);
+        telemetry.addData("Target", targetPos);
 
         previousError = error;
 

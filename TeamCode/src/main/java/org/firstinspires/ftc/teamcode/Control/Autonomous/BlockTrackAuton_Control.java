@@ -109,8 +109,8 @@ public class BlockTrackAuton_Control {
                     boxPositionX = pipeline.YellowRect.x + (pipeline.YellowRect.width/2);
                     boxPositionY = pipeline.YellowRect.y + (pipeline.YellowRect.height/2);
 
-                    drive = PIDF_Drive.PIDF(boxPositionY, 230, 0.8, 0.002); //0.00002
-                    turn = -PIDF_Turn.PIDF(boxPositionX, 160, 0.6, 0.0000000000000000001);
+                    drive = PIDF_Drive.PIDF(boxPositionY, 230, 0.8, 0.0015); //0.00002
+                    turn = -PIDF_Turn.PIDF(boxPositionX, 160, 0.6);
                 }
                 break;
         }
