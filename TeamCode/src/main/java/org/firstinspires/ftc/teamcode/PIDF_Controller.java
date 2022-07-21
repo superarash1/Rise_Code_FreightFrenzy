@@ -11,29 +11,31 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class PIDF_Controller {
 
     public ElapsedTime runtime = new ElapsedTime();
-
     public Telemetry telemetry;
 
     public double tolerance;
 
-    double targetPos;
-    double currPos;
+    double kp;
+    double kd;
+    double ki;
+    double a;
+    double kF;
 
     public double previousTime = 0;
     public double error;
     public double armError;
 
-    public double area = 0;
+    public double area;
     public double previousArea = 0;
 
     public double P = 0;
     public double I = 0;
     public double D = 0;
+
     public double deltaTime;
     public double previousError = 0;
     public double previousArmError = 0;
 
-    public double a = 0;
     public double armA = 0;
     public double previousFilterEstimate = 0;
     public double currentFilterEstimate = 0;
@@ -45,133 +47,71 @@ public class PIDF_Controller {
 
     double gravity = 0;
 
-    private double power = 0;
+    private double power;
 
     //TODO: ILQR
 
-    public PIDF_Controller(Telemetry telemetry){
+    public PIDF_Controller(double kp, Telemetry telemetry){
+        this.kp = kp;
+
+        a = 0;
+        kd = 0;
+        ki = 0;
+        kF = 0;
+
         this.telemetry = telemetry;
         this.error = tolerance + 1;
     }
 
-    public double PIDF(double currPos, double targetPos, double kp){
-        error = targetPos - currPos;
+    public PIDF_Controller(double kp, double kd, Telemetry telemetry){
+        this.kp = kp;
+        this.kd = kd;
 
-        P = kp*(error/Math.abs(targetPos)); // Proportional term : KP constant * the error of the system
+        a = 0;
+        ki = 0;
+        kF = 0;
 
-        power =  P;
-
-        telemetry.addData("Target", targetPos);
-        telemetry.addData("Error", error);
-        telemetry.addData("Power", power);
-        telemetry.addData("Proportion:", P);
-
-        return power;
+        this.telemetry = telemetry;
+        this.error = tolerance + 1;
     }
 
-    //TODO: move telemetry out
-    public double PIDF(double currPos, double targetPos, double kp, double kd){
+    public PIDF_Controller(double kp, double kd, double a, Telemetry telemetry){
+        this.kp = kp;
+        this.kd = kd;
+        this.a = a;
 
-        error = targetPos - currPos;
+        ki = 0;
+        kF = 0;
 
-        P = kp*(error/Math.abs(targetPos)); // Proportional term : KP constant * the error of the system
-
-        deltaTime = runtime.seconds();
-        runtime.reset();
-
-        D = kd * ((error - previousError) / deltaTime);
-
-        power =  P + D;
-
-        telemetry.addData("Error", error);
-        telemetry.addData("Previous Error", previousError);
-        telemetry.addData("Derivative:", D);
-        telemetry.addData("Power", power);
-        telemetry.addData("Proportion:", P);
-        telemetry.addData("Delta Time", deltaTime);
-        telemetry.addData("Target", targetPos);
-
-        previousError = error;
-
-        return power;
+        this.telemetry = telemetry;
+        this.error = tolerance + 1;
     }
 
-    public double PIDF(double currPos, double targetPos, double kp, double kd, double a){
-        error = targetPos - currPos;
+    public PIDF_Controller(double kp, double kd, double a, double ki, Telemetry telemetry){
+        this.kp = kp;
+        this.kd = kd;
+        this.a = a;
+        this.ki = ki;
 
-        P = kp*(error/Math.abs(targetPos)); // Proportional term : KP constant * the error of the system
+        kF = 0;
 
-        deltaTime = runtime.seconds();
-        runtime.reset();
-
-        errorChange = error - previousError;
-
-        currentFilterEstimate = (1-a) * errorChange + (a * previousFilterEstimate);
-
-        D = kd * (currentFilterEstimate/deltaTime);
-
-        power =  P + D;
-
-        telemetry.addData("Target", targetPos);
-        telemetry.addData("Error", error);
-        telemetry.addData("Previous Error", previousError);
-        telemetry.addData("Power", power);
-        telemetry.addData("Proportion:", P);
-        telemetry.addData("Derivative:", D);
-        telemetry.addData("Delta Time", deltaTime);
-
-        previousError = error;
-        previousFilterEstimate = currentFilterEstimate;
-
-        return power;
+        this.telemetry = telemetry;
+        this.error = tolerance + 1;
     }
 
-    //TODO: add "a" inside
-    public double PIDF(double currPos, double targetPos, double kp, double kd, double a, double ki){
-        error = targetPos - currPos;
+    public PIDF_Controller(double kp, double kd, double a, double ki, double kF, Telemetry telemetry){
+        this.kp = kp;
+        this.kd = kd;
+        this.a = a;
+        this.ki = ki;
+        this.kF = kF;
 
-        P = kp*(error/Math.abs(targetPos)); // Proportional term : KP constant * the error of the system
-
-//        deltaTime = (System.currentTimeMillis() - previousTime)/1000;
-//        previousTime = System.currentTimeMillis();
-
-        deltaTime = runtime.seconds();
-        runtime.reset();
-//        I += Math.abs(currPos) > Math.abs(targetPos * 0.8) ? deltaTime * error : 0; //TODO: Play with this I
-
-        area = previousArea + deltaTime * ki;
-
-        I = area*ki;
-
-        if ((previousError*error) < 0) area = 0;
-
-        errorChange = error - previousError;
-
-        currentFilterEstimate = (1-a) * errorChange + (a * previousFilterEstimate);
-        previousFilterEstimate = currentFilterEstimate;
-
-        D = kd * ((error - previousError) / deltaTime);
-
-        power =  P + I + D;
-
-        telemetry.addData("Target", targetPos);
-        telemetry.addData("Error", error);
-        telemetry.addData("Power", power);
-        telemetry.addData("Proportion:", P);
-        telemetry.addData("Derivative:", D);
-        telemetry.addData("Integral:", I);
-        telemetry.addData("Delta Time", deltaTime);
-        telemetry.addData("Previous Error", previousError);
-
-        previousError = error;
-        previousArea = area;
-
-        return power;
+        this.telemetry = telemetry;
+        this.error = tolerance + 1;
     }
 
-    public double PIDF(double currPos, double targetPos, double kp, double kd, double a, double ki, double kF){
+    public void PIDF(double currPos, double targetPos){
         error = targetPos - currPos;
-        previousError = error;
 
         P = kp*(error/Math.abs(targetPos)); // Proportional term : KP constant * the error of the system
 
@@ -191,20 +131,25 @@ public class PIDF_Controller {
         currentFilterEstimate = (1-a) * errorChange + (a * previousFilterEstimate);
         previousFilterEstimate = currentFilterEstimate;
 
-        D = kd * ((error - previousError) / deltaTime);
+//        D = kd * (currentFilterEstimate / deltaTime);
+        D = kd * (error - previousError / deltaTime);
 
-        power =  P + I + D + kF*Math.signum(error);
+        power = P + I + D + kF*Math.signum(error);
 
         telemetry.addData("Target", targetPos);
         telemetry.addData("Error", error);
+        telemetry.addData("Previous Error", previousError);
         telemetry.addData("Power", power);
         telemetry.addData("Proportion:", P);
         telemetry.addData("Derivative:", D);
         telemetry.addData("Integral:", I);
         telemetry.addData("Delta Time", deltaTime);
-        telemetry.addData("Previous Error", previousError);
 
-        return power;
+        previousError = error;
+    }
+
+    public double PIDF_Power(){
+        return P + I + D + kF*Math.signum(error);
     }
 
 //    public double PIDF_Arm(double currPos, double targetPos, double kp, double kd, double ki, double a, double kGravity, double firstError){
@@ -237,6 +182,7 @@ public class PIDF_Controller {
 //    }
 
     // TODO: gonna have to retune for "a"
+    // TODO: Separate into separate class
     public double PIDF_Arm(double currPos, double targetPos, double kp, double kd, double ki, double a, double kGravity, double firstError){
 
         armError = targetPos - currPos;

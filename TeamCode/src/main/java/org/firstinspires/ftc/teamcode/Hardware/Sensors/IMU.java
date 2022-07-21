@@ -38,7 +38,6 @@ public class IMU {
         straight = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         this.telemetry = telemetry;
-
     }
 
     public double Angle_FieldCentric(){

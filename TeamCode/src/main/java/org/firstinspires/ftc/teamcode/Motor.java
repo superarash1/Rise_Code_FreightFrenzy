@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
 public class Motor {
     DcMotorEx motor;
 
@@ -87,5 +89,8 @@ public class Motor {
 
     public void setPower(double power){
         motor.setPower(power);
+    }
+    public void setVelocity(){
+        motor.setVelocity(2*Math.PI, AngleUnit.RADIANS);
     }
 }

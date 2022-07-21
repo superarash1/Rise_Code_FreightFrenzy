@@ -50,7 +50,7 @@ public class TurretBotTeleOp_Control {
 
     public TurretBotTeleOp_Control(String flName, String frName, String brName, String blName, String turretName, HardwareMap hardwareMap, Gamepad gamepad1, Telemetry telemetry){
 
-        TurretPID = new PIDF_Controller(telemetry);
+        TurretPID = new PIDF_Controller(1, telemetry);
 
         driveTrain = new MecanumDriveTrain(flName, frName, brName, blName, hardwareMap);
 
@@ -58,6 +58,7 @@ public class TurretBotTeleOp_Control {
         driveTrain.reset();
 
         turret = new Turret(turretName, hardwareMap);
+
         // Set up webcam
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
@@ -128,7 +129,9 @@ public class TurretBotTeleOp_Control {
             case TRACKING:
                 if (!pipeline.YellowRect.empty()){
                     boxPositionX = pipeline.YellowRect.x + (pipeline.YellowRect.width/2);
-                    power = -TurretPID.PIDF(boxPositionX, 160, 1, 0, 0, 0);
+                    TurretPID.PIDF(boxPositionX, 160);
+
+                    power = -TurretPID.PIDF_Power();
                 }
 
                 if (gamepad1.x != lastToggleX && gamepad1.x){

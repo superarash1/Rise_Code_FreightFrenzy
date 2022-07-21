@@ -44,7 +44,7 @@ public class BotMechanisms {
         this.armLeft = new Motor(Arm1, 537.7, 3.77953, hardwareMap);
         this.armRight = new Motor(Arm2, 537.7, 3.77953, hardwareMap);
 
-        PIDF = new PIDF_Controller(telemetry);
+        PIDF = new PIDF_Controller(1,0.15, telemetry);
         cageSpin = hardwareMap.get(ServoImplEx.class, "cageSpin");
         gate = hardwareMap.get(Servo.class, "gate");
         carouselSpinner = hardwareMap.get(CRServo.class, "cSpin");

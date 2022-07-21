@@ -43,7 +43,7 @@ public class Arm {
         this.armLeft = new Motor(Arm1, 537.7, 3.77953, hardwareMap);
         this.armRight = new Motor(Arm2, 537.7, 3.77953, hardwareMap);
 
-        PIDF = new PIDF_Controller(telemetry);
+        PIDF = new PIDF_Controller(0.6, telemetry);
 
         cageSpin = hardwareMap.get(ServoImplEx.class, CageName);
 

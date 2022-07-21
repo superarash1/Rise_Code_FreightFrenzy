@@ -52,8 +52,8 @@ public class BlockTrackAuton_Control {
 
     public BlockTrackAuton_Control(String flName, String frName, String brName, String blName, String turretName, HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1){
 
-        PIDF_Drive = new PIDF_Controller(telemetry);
-        PIDF_Turn = new PIDF_Controller(telemetry);
+        PIDF_Drive = new PIDF_Controller(0.8, 0.00001, telemetry); //0.00015
+        PIDF_Turn = new PIDF_Controller(0.6, telemetry);
 
         // Set up webcam
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -109,8 +109,11 @@ public class BlockTrackAuton_Control {
                     boxPositionX = pipeline.YellowRect.x + (pipeline.YellowRect.width/2);
                     boxPositionY = pipeline.YellowRect.y + (pipeline.YellowRect.height/2);
 
-                    drive = PIDF_Drive.PIDF(boxPositionY, 230, 0.8, 0.0015); //0.00002
-                    turn = -PIDF_Turn.PIDF(boxPositionX, 160, 0.6);
+                    PIDF_Drive.PIDF(boxPositionY, 220);
+                    PIDF_Turn.PIDF(boxPositionX, 160);
+
+                    drive = PIDF_Drive.PIDF_Power(); //0.00002
+                    turn = -PIDF_Turn.PIDF_Power();
                 }
                 break;
         }

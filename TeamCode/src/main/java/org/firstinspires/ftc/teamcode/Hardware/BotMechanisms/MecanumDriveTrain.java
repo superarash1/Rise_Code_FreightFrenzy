@@ -37,6 +37,13 @@ public class MecanumDriveTrain {
         this.backLeft.setDirectionReverse();
     }
 
+    public void setPower(double power){
+        this.frontLeft.setPower(power);
+        this.frontRight.setPower(power);
+        this.backRight.setPower(power);
+        this.backLeft.setPower(power);
+    }
+
     public void setPower(double fLeft, double fRight, double bRight, double bLeft){
         this.frontLeft.setPower(fLeft);
         this.frontRight.setPower(fRight);

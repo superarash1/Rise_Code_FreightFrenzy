@@ -73,7 +73,7 @@ public class BotMechanism {
         gate = hardwareMap.get(Servo.class, "gate");
         carouselSpinner = hardwareMap.get(CRServo.class, "cSpin");
 
-        PIDF = new PIDF_Controller(telemetry);
+        PIDF = new PIDF_Controller(0.6, telemetry);
 
         this.intake.reset();
         this.armLeft.reset();

@@ -25,7 +25,7 @@ public class TestAuton_Control {
 
     public TestAuton_Control(String flName, String frName, String brName, String blName, HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1){
 
-        this.PID = new PIDF_Controller(telemetry);
+        this.PID = new PIDF_Controller(0.6, 0.0001, 0, 0, telemetry);
         this.chassis = new MecanumDriveTrain(flName, frName, brName, blName, hardwareMap);
         this.turret = new Turret("spinny", hardwareMap);
 
@@ -39,51 +39,51 @@ public class TestAuton_Control {
     }
 
     public void Turret(){
-        if (driveStep == 1){
-            turret.turretMotor.setPower(1);
-        }else if (driveStep == 2){
-            turret.turretMotor.setPower(-1);
-        }else {
-            turret.turretMotor.setPower(0);
-        }
+//        if (driveStep == 1){
+//            turret.turretMotor.setPower(1);
+//        }else if (driveStep == 2){
+//            turret.turretMotor.setPower(-1);
+//        }else {
+//            turret.turretMotor.setPower(0);
+//        }
     }
 
     public void Drive(){
         if (driveStep == 1){
+            PID.PIDF(-chassis.frontLeft.getCurrPosInches(), 15);
 
-            power = PID.PIDF(chassis.frontLeft.getCurrPosInches(), 15, 0.6, 0.0032, 0, 0.06); // 0.675, 0.0032, 0, 0.01
+            power = PID.PIDF_Power(); // 0.675, 0.0032, 0, 0.01
 
-            chassis.setPower(-power, -power, -power, -power);
+            chassis.setPower(-power);
 
             if (PID.getError() < PID.tolerance){
                 chassis.reset();
 
                 // Make a nested method thingy so that I can just put one for all
-                chassis.setPower(0, 0, 0, 0);
+                chassis.setPower(0);
                 driveStep = 2;
 
             }
         }
-
-        if (driveStep == 2){
-
-            power = PID.PIDF(chassis.frontLeft.getCurrPosInches(), -15, 0.6, 0.0032, 0, 0.06);
-            chassis.setPower(-power, -power, -power, -power);
-
-            if (Math.abs(PID.getError()) < PID.tolerance){
-                chassis.reset();
-
-                // Make a nested method thingy so that I can just put one for all
-                chassis.setPower(0, 0, 0, 0);
-                driveStep = 3;
-
-            }
-        }
+//
+//        if (driveStep == 2){
+//            PID.PIDF(chassis.frontLeft.getCurrPosInches(), -15);
+//
+//            power = PID.PIDF_Power();
+//            chassis.setPower(-power, -power, -power, -power);
+//
+//            if (Math.abs(PID.getError()) < PID.tolerance){
+//                chassis.reset();
+//
+//                // Make a nested method thingy so that I can just put one for all
+//                chassis.setPower(0, 0, 0, 0);
+//                driveStep = 3;
+//
+//            }
+//        }
     }
 
     public void Telemetry(){
         telemetry.addData("Auton Step", driveStep);
-
-        telemetry.addData("Power", power);
     }
 }
