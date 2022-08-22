@@ -4,29 +4,29 @@ import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Control.TeleOp.TurretBotTeleOp_Control;
-import org.firstinspires.ftc.teamcode.Hardware.BotMechanisms.MecanumDriveTrain;
+import org.firstinspires.ftc.teamcode.Control.TeleOp.PersonTrackControl;
 
 @TeleOp
-public class TurretBotTeleOp extends LinearOpMode {
+public class PersonTracker_TeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-
         PhotonCore.enable();
-        TurretBotTeleOp_Control turret = new TurretBotTeleOp_Control("frontLeft", "frontRight", "backRight", "backLeft","spinny", hardwareMap, gamepad1, telemetry);
+
+        PersonTrackControl control = new PersonTrackControl("frontLeft", "frontRight", "backRight", "backLeft", "spinny", hardwareMap, telemetry, gamepad1);
 
         telemetry.addLine("Waiting for start");
         telemetry.update();
 
         waitForStart();
+
         while (opModeIsActive()){
-            turret.teleOpDrive();
-            turret.turretSpin();
-            turret.Telemetry();
+            control.Drive();
+            control.Turret();
 
             telemetry.update();
         }
-        turret.closeCamera();
+
+        control.closeCamera();
     }
 }

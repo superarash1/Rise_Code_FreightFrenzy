@@ -8,6 +8,9 @@ public class Gate {
 
     Servo gate;
 
+    double openPosition = 0;
+    double closedPosition = 0;
+
     public enum gateState {
         OPEN,
         CLOSED
@@ -15,17 +18,28 @@ public class Gate {
 
     public gateState GateState;
 
-    public Gate(String name, HardwareMap hardwareMap){
+    public Gate(String name, HardwareMap hardwareMap, double openPosition){
         gate = hardwareMap.get(Servo.class, name); // name is "gate"
+        this.openPosition = openPosition;
 
         GateState = gateState.CLOSED;
     }
 
-    public void toggleGate(){
+    public Gate(String name, HardwareMap hardwareMap, double openPosition, double closedPosition){
+        gate = hardwareMap.get(Servo.class, name); // name is "gate"
+        this.openPosition = openPosition;
+        this.closedPosition = closedPosition;
 
-        /* TODO: Might need to switch open and closed positions cuz I don't remember which one is which
-            (including initial state in constructor)
-         */
+        GateState = gateState.CLOSED;
+    }
+
+    public Gate(String name, HardwareMap hardwareMap, double openPosition, double closePosition, Gate.gateState initialState){
+        gate = hardwareMap.get(Servo.class, name); // name is "gate"
+
+        GateState = initialState;
+    }
+
+    public void toggleGate(){
         switch (GateState) {
             case OPEN:
                 gate.setPosition(0.6);

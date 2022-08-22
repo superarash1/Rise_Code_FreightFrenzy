@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Hardware.BotMechanisms.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.Hardware.BotMechanisms.Turret;
-import org.firstinspires.ftc.teamcode.PIDF_Controller;
+import org.firstinspires.ftc.teamcode.Control.MotionControl.PIDF_Controller;
 
 public class TestAuton_Control {
 
@@ -39,20 +39,18 @@ public class TestAuton_Control {
     }
 
     public void Turret(){
-//        if (driveStep == 1){
-//            turret.turretMotor.setPower(1);
-//        }else if (driveStep == 2){
-//            turret.turretMotor.setPower(-1);
-//        }else {
-//            turret.turretMotor.setPower(0);
-//        }
+        if (driveStep == 1){
+            turret.turretMotor.setPower(1);
+        } else if (driveStep == 2){
+            turret.turretMotor.setPower(-1);
+        } else {
+            turret.turretMotor.setPower(0);
+        }
     }
 
     public void Drive(){
         if (driveStep == 1){
-            PID.PIDF(-chassis.frontLeft.getCurrPosInches(), 15);
-
-            power = PID.PIDF_Power(); // 0.675, 0.0032, 0, 0.01
+            power = PID.PIDF_Power(-chassis.frontLeft.getCurrPosInches(), 15, 15); // 0.675, 0.0032, 0, 0.01
 
             chassis.setPower(-power);
 
@@ -62,25 +60,22 @@ public class TestAuton_Control {
                 // Make a nested method thingy so that I can just put one for all
                 chassis.setPower(0);
                 driveStep = 2;
+            }
+        }
+
+        if (driveStep == 2){
+            power = PID.PIDF_Power(-chassis.frontLeft.getCurrPosInches(), -15, -15);
+            chassis.setPower(power);
+
+            if (Math.abs(PID.getError()) < PID.tolerance){
+                chassis.reset();
+
+                // Make a nested method thingy so that I can just put one for all
+                chassis.setPower(0);
+                driveStep = 3;
 
             }
         }
-//
-//        if (driveStep == 2){
-//            PID.PIDF(chassis.frontLeft.getCurrPosInches(), -15);
-//
-//            power = PID.PIDF_Power();
-//            chassis.setPower(-power, -power, -power, -power);
-//
-//            if (Math.abs(PID.getError()) < PID.tolerance){
-//                chassis.reset();
-//
-//                // Make a nested method thingy so that I can just put one for all
-//                chassis.setPower(0, 0, 0, 0);
-//                driveStep = 3;
-//
-//            }
-//        }
     }
 
     public void Telemetry(){

@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Hardware.BotMechanisms.MecanumDriveTrain;
-import org.firstinspires.ftc.teamcode.OpenCV.VisionPipelines.BlockDetection;
-import org.firstinspires.ftc.teamcode.PIDF_Controller;
+import org.firstinspires.ftc.teamcode.Hardware.Sensors.Camera.OpenCV.VisionPipelines.BlockDetection;
+import org.firstinspires.ftc.teamcode.Control.MotionControl.PIDF_Controller;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -50,7 +50,7 @@ public class BlockTrackAuton_Control {
     public PIDF_Controller PIDF_Drive;
     public PIDF_Controller PIDF_Turn;
 
-    public BlockTrackAuton_Control(String flName, String frName, String brName, String blName, String turretName, HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1){
+    public BlockTrackAuton_Control(String flName, String frName, String brName, String blName, HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad1){
 
         PIDF_Drive = new PIDF_Controller(0.8, 0.00001, telemetry); //0.00015
         PIDF_Turn = new PIDF_Controller(0.6, telemetry);
@@ -109,11 +109,8 @@ public class BlockTrackAuton_Control {
                     boxPositionX = pipeline.YellowRect.x + (pipeline.YellowRect.width/2);
                     boxPositionY = pipeline.YellowRect.y + (pipeline.YellowRect.height/2);
 
-                    PIDF_Drive.PIDF(boxPositionY, 220);
-                    PIDF_Turn.PIDF(boxPositionX, 160);
-
-                    drive = PIDF_Drive.PIDF_Power(); //0.00002
-                    turn = -PIDF_Turn.PIDF_Power();
+                    drive = PIDF_Drive.PIDF_Power(boxPositionY, 220, 220); //0.00002
+                    turn = -PIDF_Turn.PIDF_Power(boxPositionX, 160, 320);
                 }
                 break;
         }

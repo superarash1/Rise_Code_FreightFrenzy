@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode.Hardware.BotMechanisms;
 
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.Motor;
+import org.firstinspires.ftc.teamcode.Hardware.Motor;
 
 public class Intake {
 
